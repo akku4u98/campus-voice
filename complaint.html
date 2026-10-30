@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Complaint - Campus Voice</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            padding: 40px 15px;
+        }
+
+        .container {
+            background: white;
+            max-width: 550px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px #0002;
+        }
+
+        h1 {
+            text-align: center;
+            color: #172554;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #172554;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Submit a Complaint</h1>
+
+    <form action="/complaint" method="POST">
+
+        <label>Complaint Category</label>
+
+        <select name="category" required>
+            <option value="">Select Category</option>
+            <option>Infrastructure</option>
+            <option>Laboratory</option>
+            <option>Water Problem</option>
+            <option>Library</option>
+            <option>Cleanliness</option>
+            <option>Other</option>
+        </select>
+
+        <label>Complaint Title</label>
+
+        <input type="text"
+        name="title"
+        placeholder="Enter complaint title"
+        required>
+
+        <label>Complaint Description</label>
+
+        <textarea name="description"
+        rows="5"
+        placeholder="Describe your problem..."
+        required></textarea>
+
+        <button type="submit">
+            Submit Complaint
+        </button>
+
+    </form>
+
+    <a href="/" class="back">Back to Home</a>
+
+</div>
+
+</body>
+</html>

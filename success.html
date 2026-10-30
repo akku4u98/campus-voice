@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Complaint Submitted - Campus Voice</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .success-box {
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            padding: 40px 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 5px 25px #00000012;
+        }
+
+        .check {
+            font-size: 65px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #15803d;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .id-box {
+            background: #eff6ff;
+            padding: 22px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .id-box p {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .id {
+            font-size: 27px;
+            font-weight: bold;
+            color: #172554;
+            overflow-wrap: anywhere;
+        }
+
+        button, .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn {
+            background: #172554;
+            color: white;
+        }
+
+        .home {
+            background: #e2e8f0;
+            color: #172554;
+        }
+
+        footer {
+            color: #94a3b8;
+            margin-top: 25px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="success-box">
+
+    <div class="check">✅</div>
+
+    <h1>Complaint Submitted!</h1>
+
+    <p class="message">
+        Your complaint has been successfully submitted.
+        Thank you for helping us improve our college.
+    </p>
+
+    <div class="id-box">
+
+        <p>Your Unique Complaint ID</p>
+
+        <div class="id" id="complaintID">
+            {{ complaint_id }}
+        </div>
+
+    </div>
+
+    <button onclick="copyID()">
+        📋 Copy Complaint ID
+    </button>
+
+    <a href="/track" class="btn">
+        Track Your Complaint
+    </a>
+
+    <a href="/" class="btn home">
+        Back to Home
+    </a>
+
+    <footer>
+        © 2026 Campus Voice | Student Mini Project
+    </footer>
+
+</div>
+
+<script>
+
+function copyID() {
+
+    const id = document.getElementById(
+        "complaintID"
+    ).innerText.trim();
+
+    navigator.clipboard.writeText(id)
+        .then(function() {
+            alert("Complaint ID Copied Successfully!");
+        })
+        .catch(function() {
+            alert("Please copy your Complaint ID manually: " + id);
+        });
+
+}
+
+</script>
+
+</body>
+</html>
