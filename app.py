@@ -1,41 +1,49 @@
+
 import os
-from flask import Flask, render_template, request, redirect, session
 import sqlite3
 import uuid
-import os
+
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    session,
+    flash
+)
 
 app = Flask(__name__)
 
-# Secret key
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "campus_voice_demo_secret_key"
-)
+# Render Environment Variables
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(32)
 
-# Admin Login Details
-ADMIN_USERNAME = "K U AKASH"
-ADMIN_PASSWORD = "AkAsH2007@."
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "K U AKASH")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
+
+DATABASE = os.environ.get("DATABASE_PATH", "database.db")
+
+VALID_STATUSES = ["Pending", "In Progress", "Resolved"]
 
 
-# Database Connection
+# Database connection
 def get_db_connection():
-    conn = sqlite3.connect("database.db")
+    conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-# Database Creation
+# Create database automatically
 def create_database():
-
     conn = get_db_connection()
 
     conn.execute("""
         CREATE TABLE IF NOT EXISTS complaints (
             id TEXT PRIMARY KEY,
-            category TEXT,
-            title TEXT,
-            description TEXT,
-            status TEXT
+            category TEXT NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'Pending'
         )
     """)
 
@@ -43,28 +51,33 @@ def create_database():
     conn.close()
 
 
-# Homepage
+# Home page
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# Submit Complaint
+# Submit complaint
 @app.route("/complaint", methods=["GET", "POST"])
 def complaint():
 
     if request.method == "POST":
 
-        category = request.form["category"]
-        title = request.form["title"]
-        description = request.form["description"]
+        category = request.form.get("category", "").strip()
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
 
-        complaint_id = str(uuid.uuid4())[:8].upper()
+        if not category or not title or not description:
+            flash("Please fill in all fields.")
+            return redirect(url_for("complaint"))
+
+        complaint_id = str(uuid.uuid4()).replace("-", "")[:8].upper()
 
         conn = get_db_connection()
 
         conn.execute("""
             INSERT INTO complaints
+            (id, category, title, description, status)
             VALUES (?, ?, ?, ?, ?)
         """, (
             complaint_id,
@@ -85,74 +98,74 @@ def complaint():
     return render_template("complaint.html")
 
 
-# Complaint Tracking
+# Track complaint
 @app.route("/track", methods=["GET", "POST"])
 def track():
 
-    complaint = None
-    error = None
+    complaint_data = None
+    searched = False
 
     if request.method == "POST":
 
-        complaint_id = request.form[
-            "complaint_id"
-        ].strip().upper()
+        complaint_id = request.form.get(
+            "complaint_id", ""
+        ).strip().upper()
+
+        searched = True
 
         conn = get_db_connection()
 
-        complaint = conn.execute(
-            "SELECT * FROM complaints WHERE id = ?",
-            (complaint_id,)
-        ).fetchone()
+        complaint_data = conn.execute("""
+            SELECT * FROM complaints
+            WHERE id = ?
+        """, (complaint_id,)).fetchone()
 
         conn.close()
 
-        if complaint is None:
-            error = "Complaint ID not found! Please check again."
-
     return render_template(
         "track.html",
-        complaint=complaint,
-        error=error
+        complaint=complaint_data,
+        searched=searched
     )
 
 
-# Admin Login
+# Admin login
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
 
-        if (username == ADMIN_USERNAME and
-                password == ADMIN_PASSWORD):
+        if (
+            ADMIN_PASSWORD
+            and username == ADMIN_USERNAME
+            and password == ADMIN_PASSWORD
+        ):
+            session.clear()
+            session["admin_logged_in"] = True
 
-            session["admin"] = True
+            return redirect(url_for("admin"))
 
-            return redirect("/admin")
-
-        return render_template(
-            "login.html",
-            error="Invalid Username or Password!"
-        )
+        flash("Invalid username or password.")
 
     return render_template("login.html")
 
 
-# Admin Dashboard
+# Admin dashboard
 @app.route("/admin")
 def admin():
 
-    if not session.get("admin"):
-        return redirect("/login")
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
-    complaints = conn.execute(
-        "SELECT * FROM complaints ORDER BY rowid DESC"
-    ).fetchall()
+    complaints = conn.execute("""
+        SELECT * FROM complaints
+        ORDER BY rowid DESC
+    """).fetchall()
 
     conn.close()
 
@@ -162,69 +175,64 @@ def admin():
     )
 
 
-# Update Complaint Status
+# Update complaint status
 @app.route("/update/<complaint_id>", methods=["POST"])
 def update(complaint_id):
 
-    if not session.get("admin"):
-        return redirect("/login")
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("login"))
 
-    status = request.form["status"]
+    status = request.form.get("status", "")
 
-    if status not in [
-        "Pending",
-        "In Progress",
-        "Resolved"
-    ]:
-        return "Invalid status", 400
+    if status not in VALID_STATUSES:
+        flash("Invalid complaint status.")
+        return redirect(url_for("admin"))
 
     conn = get_db_connection()
 
-    conn.execute(
-        "UPDATE complaints SET status=? WHERE id=?",
-        (status, complaint_id)
-    )
+    conn.execute("""
+        UPDATE complaints
+        SET status = ?
+        WHERE id = ?
+    """, (status, complaint_id))
 
     conn.commit()
     conn.close()
 
-    return redirect("/admin")
+    return redirect(url_for("admin"))
 
 
-# Delete Complaint
+# Delete complaint
 @app.route("/delete/<complaint_id>", methods=["POST"])
 def delete(complaint_id):
 
-    if not session.get("admin"):
-        return redirect("/login")
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("login"))
 
     conn = get_db_connection()
 
-    conn.execute(
-        "DELETE FROM complaints WHERE id=?",
-        (complaint_id,)
-    )
+    conn.execute("""
+        DELETE FROM complaints
+        WHERE id = ?
+    """, (complaint_id,))
 
     conn.commit()
     conn.close()
 
-    return redirect("/admin")
+    return redirect(url_for("admin"))
 
 
-# Admin Logout
+# Admin logout
 @app.route("/logout")
 def logout():
 
-    session.pop("admin", None)
+    session.clear()
 
-    return redirect("/login")
+    return redirect(url_for("login"))
 
 
-# Create Database
+# Start application
 create_database()
 
-
-# Run Application
 if __name__ == "__main__":
-
-    app.run(debug=True)
+    app.run(debug=False)
