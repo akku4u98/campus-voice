@@ -1,1 +1,231 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Complaint - Campus Voice</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 8%;
+        }
+
+        header h2 {
+            font-size: 25px;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .track-box {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px #00000010;
+        }
+
+        h1 {
+            color: #172554;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #172554;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 10px;
+        }
+
+        .result h2 {
+            color: #172554;
+            margin-bottom: 15px;
+        }
+
+        .result p {
+            margin: 12px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #fef3c7;
+            color: #92400e;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 12px;
+            border-radius: 7px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>🎓 Campus Voice</h2>
+</header>
+
+<div class="container">
+
+    <div class="track-box">
+
+        <h1>Track Your Complaint</h1>
+
+        <p class="subtitle">
+            Check the current status of your complaint.
+        </p>
+
+        <form action="/track" method="POST">
+
+            <label>Enter Your Complaint ID</label>
+
+            <input
+                type="text"
+                name="complaint_id"
+                placeholder="Example: A1B2C3D4"
+                required
+            >
+
+            <button type="submit">
+                🔍 Track Complaint
+            </button>
+
+        </form>
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+        {% if complaint %}
+
+        <div class="result">
+
+            <h2>Complaint Details</h2>
+
+            <p>
+                <b>Complaint ID:</b>
+                {{ complaint.id }}
+            </p>
+
+            <p>
+                <b>Category:</b>
+                {{ complaint.category }}
+            </p>
+
+            <p>
+                <b>Title:</b>
+                {{ complaint.title }}
+            </p>
+
+            <p>
+                <b>Description:</b>
+                {{ complaint.description }}
+            </p>
+
+            <p>
+                <b>Current Status:</b>
+                <span class="status">
+                    {{ complaint.status }}
+                </span>
+            </p>
+
+        </div>
+
+        {% endif %}
+
+        <a href="/" class="back">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Campus Voice | Student Mini Project
+</footer>
+
+</body>
+</html>
+
