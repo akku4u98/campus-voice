@@ -1,1 +1,166 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campus Voice</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 25px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            font-size: 26px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #172554, #2563eb);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #facc15;
+            color: #172554;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 8px;
+        }
+
+        .btn:hover {
+            background: #fde047;
+        }
+
+        .track-btn {
+            background: white;
+            color: #172554;
+        }
+
+        .track-btn:hover {
+            background: #dbeafe;
+        }
+
+        .features {
+            padding: 60px 8%;
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 260px;
+            box-shadow: 0 4px 15px #00000010;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: #2563eb;
+        }
+
+        footer {
+            background: #172554;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>🎓 Campus Voice</h2>
+    <span>Anonymous Complaint Portal</span>
+</header>
+
+<section class="hero">
+
+    <h1>Your Voice Matters!</h1>
+
+    <p>
+        Report campus problems safely.
+        Help us build a better college.
+    </p>
+
+    <a href="/complaint" class="btn">
+        Submit a Complaint
+    </a>
+
+    <a href="/track" class="btn track-btn">
+        Track Complaint
+    </a>
+
+</section>
+
+<section class="features">
+
+    <h2>Why Campus Voice?</h2>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>🔒 Privacy First</h3>
+            <p>Submit complaints without providing your name.</p>
+        </div>
+
+        <div class="card">
+            <h3>🎫 Complaint Tracking</h3>
+            <p>Track your complaint using a unique ID.</p>
+        </div>
+
+        <div class="card">
+            <h3>📊 Quick Updates</h3>
+            <p>Check the progress of reported issues.</p>
+        </div>
+
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 Campus Voice | Student Mini Project</p>
+</footer>
+
+</body>
+</html>
