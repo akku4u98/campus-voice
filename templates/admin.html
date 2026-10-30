@@ -1,1 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campus Voice - Admin Dashboard</title>
 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h2 {
+            font-size: 24px;
+        }
+
+        .logout {
+            background: #ef4444;
+            color: white;
+            padding: 11px 20px;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+            color: #172554;
+            margin-bottom: 8px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+            border-left: 5px solid #2563eb;
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .card h1 {
+            margin-top: 15px;
+            font-size: 32px;
+            color: #172554;
+        }
+
+        .complaint-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        .complaint-section h2 {
+            color: #172554;
+            margin-bottom: 20px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #eff6ff;
+            color: #172554;
+        }
+
+        select {
+            padding: 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 9px 13px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .delete {
+            background: #dc2626;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+        }
+
+        footer {
+            background: #172554;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 600px) {
+            header h2 {
+                font-size: 19px;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+
+            .complaint-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h2>🎓 Campus Voice Admin</h2>
+
+    <a href="/logout" class="logout">
+        Logout
+    </a>
+
+</header>
+
+<div class="container">
+
+    <div class="welcome">
+
+        <h1>Welcome, Admin! 👋</h1>
+
+        <p>Manage and monitor student complaints.</p>
+
+    </div>
+
+    {% set ns = namespace(
+        pending=0,
+        progress=0,
+        resolved=0
+    ) %}
+
+    {% for c in complaints %}
+
+        {% if c.status == "Pending" %}
+            {% set ns.pending = ns.pending + 1 %}
+        {% elif c.status == "In Progress" %}
+            {% set ns.progress = ns.progress + 1 %}
+        {% elif c.status == "Resolved" %}
+            {% set ns.resolved = ns.resolved + 1 %}
+        {% endif %}
+
+    {% endfor %}
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>📋 Total Complaints</h3>
+            <h1>{{ complaints|length }}</h1>
+        </div>
+
+        <div class="card">
+            <h3>⏳ Pending</h3>
+            <h1>{{ ns.pending }}</h1>
+        </div>
+
+        <div class="card">
+            <h3>🔄 In Progress</h3>
+            <h1>{{ ns.progress }}</h1>
+        </div>
+
+        <div class="card">
+            <h3>✅ Resolved</h3>
+            <h1>{{ ns.resolved }}</h1>
+        </div>
+
+    </div>
+
+    <div class="complaint-section">
+
+        <h2>📢 Student Complaints</h2>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Complaint ID</th>
+                        <th>Category</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for c in complaints %}
+
+                    <tr>
+
+                        <td>{{ c.id }}</td>
+
+                        <td>{{ c.category }}</td>
+
+                        <td>{{ c.title }}</td>
+
+                        <td>{{ c.description }}</td>
+
+                        <td>{{ c.status }}</td>
+
+                        <td>
+
+                            <form action="/update/{{ c.id }}"
+                                  method="POST">
+
+                                <select name="status">
+
+                                    <option value="Pending"
+                                    {% if c.status == "Pending" %}
+                                    selected
+                                    {% endif %}>
+                                        Pending
+                                    </option>
+
+                                    <option value="In Progress"
+                                    {% if c.status == "In Progress" %}
+                                    selected
+                                    {% endif %}>
+                                        In Progress
+                                    </option>
+
+                                    <option value="Resolved"
+                                    {% if c.status == "Resolved" %}
+                                    selected
+                                    {% endif %}>
+                                        Resolved
+                                    </option>
+
+                                </select>
+
+                                <button type="submit">
+                                    Update
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                        <td>
+
+                            <form action="/delete/{{ c.id }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Are you sure you want to delete this complaint?')">
+
+                                <button type="submit" class="delete">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="7" class="empty">
+                            No complaints available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2026 Campus Voice | Admin Dashboard</p>
+</footer>
+
+</body>
+</html>
